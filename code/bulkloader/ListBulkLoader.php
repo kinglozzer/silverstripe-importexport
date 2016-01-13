@@ -18,7 +18,7 @@ class ListBulkLoader extends BetterBulkLoader {
 	}
 
 	public function setList(DataList $list){
-		$this->list = list;
+		$this->list = $list;
 
 		return $this;
 	}
