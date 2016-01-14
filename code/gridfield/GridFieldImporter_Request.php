@@ -81,15 +81,25 @@ class GridFieldImporter_Request extends RequestHandler {
 		//decode response body. ugly hack ;o
 		$body = Convert::json2array( $uploadResponse->getBody() );
 		$body = array_shift($body);
-		//add extra data
-		$body['import_url'] = Controller::join_links(
-			$this->Link('preview'), $body['id']
-		);
-		//don't return buttons at all
-		unset($body['buttons']);
+
+		$errorMessage = '';
+		$valid = $this->extend('validateCSVFile', $body, $errorMessage);
+
+		if (!empty($valid) && min($valid) === false) {
+			// Add the error message to the file
+			$body['error'] = $errorMessage;
+		} else {
+			//add extra data
+			$body['import_url'] = Controller::join_links(
+				$this->Link('preview'), $body['id']
+			);
+			//don't return buttons at all
+			unset($body['buttons']);
+		}
+
 		//re-encode
 		$response = new SS_HTTPResponse(Convert::raw2json(array($body)));
-		
+		$response->addHeader('Content-Type', 'text/plain');
 		return $response;
 	}
 
