@@ -22,8 +22,12 @@
 		//when file has uploaded, change url to the field mapper
 		onmatch: function() {
 			this.on('fileuploaddone', function(e,data){
-				e.preventDefault();
-				window.location.href = data.result[0].import_url;
+				var result = data.result[0];
+
+				if (result && result.import_url) {
+					e.preventDefault();
+					window.location.href = result.import_url;
+				}
 			});
 		}
 	});
